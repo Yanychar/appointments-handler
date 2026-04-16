@@ -1,0 +1,23 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: appointments-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: appointments
+      MYSQL_USER: mesq_user
+      MYSQL_PASSWORD: mesq_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - appointments-mysql-data:/var/lib/mysql
+
+  redis:
+    image: redis:7
+    container_name: appointments-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  appointments-mysql-data:
