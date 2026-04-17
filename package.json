@@ -19,7 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "demo:webhook": "node scripts/demo-webhook.js",
-    "demo:webhook:fail": "node scripts/demo-webhook.js fail"
+    "demo:webhook:fail": "node scripts/demo-webhook.js fail",
+    "clinicminds:subscribe": "node scripts/clinicminds-subscribe.js",
+    "clinicminds:unsubscribe": "node scripts/clinicminds-unsubscribe.js"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.4",
