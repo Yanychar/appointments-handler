@@ -85,4 +85,61 @@ describe('ClinicmindsService', () => {
       }),
     );
   });
+
+  it('fetches scheduled appointments for the scheduled appointments trigger endpoint', async () => {
+    const service = new ClinicmindsService();
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      headers: {
+        get: jest.fn().mockReturnValue('application/json'),
+      },
+      json: jest.fn().mockResolvedValue([{ id: 'apt_1' }]),
+      text: jest.fn(),
+    });
+
+    global.fetch = fetchMock as typeof fetch;
+
+    await service.getScheduledAppointments();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://app.clinicminds.com/api/triggers-actions/scheduled-appointments/',
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'x-api-key': 'test-key',
+          'user-agent': 'AppointmentsHandler/1.0 (+dev@example.test)',
+        }),
+      }),
+    );
+  });
+
+  it('searches appointments by patient id number and filter', async () => {
+    const service = new ClinicmindsService();
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      headers: {
+        get: jest.fn().mockReturnValue('application/json'),
+      },
+      json: jest.fn().mockResolvedValue([{ id: 'apt_2' }]),
+      text: jest.fn(),
+    });
+
+    global.fetch = fetchMock as typeof fetch;
+
+    await service.searchAppointments({
+      clientIdNumber: '123-4567',
+      filter: 'future',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://app.clinicminds.com/api/triggers-actions/search-appointments/?client_id_number=123-4567&filter=future',
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'x-api-key': 'test-key',
+          'user-agent': 'AppointmentsHandler/1.0 (+dev@example.test)',
+        }),
+      }),
+    );
+  });
 });

@@ -14,6 +14,11 @@ type UnsubscribeOptions = {
   callbackUrl?: string;
 };
 
+type SearchAppointmentsOptions = {
+  clientIdNumber: string;
+  filter?: string;
+};
+
 @Injectable()
 export class ClinicmindsService {
   async subscribe(options: SubscribeOptions = {}) {
@@ -22,7 +27,7 @@ export class ClinicmindsService {
 
     return Promise.all(
       events.map((event) =>
-        this.request('/subscribe/', {
+        this.post('/subscribe/', {
           event,
           target_url: callbackUrl,
         }),
@@ -33,13 +38,33 @@ export class ClinicmindsService {
   async unsubscribe(options: UnsubscribeOptions = {}) {
     const callbackUrl = this.getCallbackUrl(options.callbackUrl);
 
-    return this.request('/unsubscribe/', {
+    return this.post('/unsubscribe/', {
       target_url: callbackUrl,
     });
   }
 
-  private async request(pathname: string, payload: Record<string, string>) {
-    const response = await fetch(`${this.getApiBaseUrl()}${pathname}`, {
+  async getScheduledAppointments() {
+    return this.get('/scheduled-appointments/');
+  }
+
+  async searchAppointments(options: SearchAppointmentsOptions) {
+    if (!options.clientIdNumber) {
+      throw new Error('clientIdNumber is required');
+    }
+
+    const searchParams = new URLSearchParams({
+      client_id_number: options.clientIdNumber,
+    });
+
+    if (options.filter) {
+      searchParams.set('filter', options.filter);
+    }
+
+    return this.get(`/search-appointments/?${searchParams.toString()}`);
+  }
+
+  private async post(pathname: string, payload: Record<string, string>) {
+    return this.request(`${this.getApiBaseUrl()}${pathname}`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -48,6 +73,20 @@ export class ClinicmindsService {
       },
       body: JSON.stringify(payload),
     });
+  }
+
+  private async get(pathname: string) {
+    return this.request(`${this.getApiBaseUrl()}${pathname}`, {
+      method: 'GET',
+      headers: {
+        'x-api-key': this.getApiKey(),
+        'user-agent': this.getUserAgent(),
+      },
+    });
+  }
+
+  private async request(url: string, init: RequestInit) {
+    const response = await fetch(url, init);
 
     if (!response.ok) {
       const responseText = await response.text();
@@ -90,6 +129,7 @@ export class ClinicmindsService {
   }
 
   private getCallbackUrl(overrideCallbackUrl?: string) {
+
     const callbackUrl = overrideCallbackUrl || process.env.CLINICMINDS_CALLBACK_URL;
 
     if (!callbackUrl) {

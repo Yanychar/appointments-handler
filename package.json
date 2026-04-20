@@ -21,7 +21,9 @@
     "demo:webhook": "node scripts/demo-webhook.js",
     "demo:webhook:fail": "node scripts/demo-webhook.js fail",
     "clinicminds:subscribe": "node scripts/clinicminds-subscribe.js",
-    "clinicminds:unsubscribe": "node scripts/clinicminds-unsubscribe.js"
+    "clinicminds:unsubscribe": "node scripts/clinicminds-unsubscribe.js",
+    "clinicminds:get-scheduled-appointments": "node scripts/clinicminds-get-scheduled-appointments.js",
+    "clinicminds:search-appointments": "node scripts/clinicminds-search-appointments.js"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.4",
